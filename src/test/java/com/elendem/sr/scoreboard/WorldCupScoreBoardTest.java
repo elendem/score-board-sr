@@ -3,6 +3,7 @@ package com.elendem.sr.scoreboard;
 import com.elendem.sr.scoreboard.application.FootballScoreBoard;
 import com.elendem.sr.scoreboard.application.WorldCupScoreBoard;
 import com.elendem.sr.scoreboard.model.Match;
+import com.elendem.sr.scoreboard.model.MatchKey;
 import com.elendem.sr.scoreboard.model.Team;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +31,7 @@ public class WorldCupScoreBoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("singleMatchValidTeams")
+    @MethodSource("matchValidTeamsProvider")
     public void addMatchToScoreboard_oneMatch(Match match){
         scoreboard.startMatch(match);
         final Integer oneMatch = 1;
@@ -39,7 +40,7 @@ public class WorldCupScoreBoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("singleMatchValidTeams")
+    @MethodSource("matchValidTeamsProvider")
     public void createNewMatchWithTeams_thenValidateTeams(Match match){
         scoreboard.startMatch(match);
         Assertions.assertEquals(scoreboard.getMatches().getFirst(), match);
@@ -60,18 +61,55 @@ public class WorldCupScoreBoardTest {
     }
 
     @ParameterizedTest
-    @MethodSource("singleMatchValidTeams")
+    @MethodSource("matchValidTeamsProvider")
     public void createNewMatchWithTeams_thenValidateScore(Match match){
         scoreboard.startMatch(match);
         final Integer initTotalScore = 0;
         Assertions.assertEquals(scoreboard.getMatches().getFirst().getTotalScore(), initTotalScore);
     }
 
-    public static Stream<Arguments> singleMatchValidTeams() {
+    @ParameterizedTest
+    @MethodSource("matchValidTeamsProvider")
+    public void updateScoreOfRunningMatch_single(Match match){
+        scoreboard.startMatch(match);
+        final Integer scoreHome = 3;
+        final Integer scoreGuest = 2;
+        final var matchKey = new MatchKey(match);
+        var updatedMatch = scoreboard.updateMatchScore(matchKey, scoreHome, scoreGuest);
+        Assertions.assertEquals(scoreHome + scoreGuest, updatedMatch.getTotalScore());
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchValidTeamsProvider")
+    public void updateScoreOfRunningMatch_invalidScore(Match match){
+        scoreboard.startMatch(match);
+        final Integer scoreHome = -1;
+        final Integer scoreGuest = 2;
+        final var matchKey = new MatchKey(match);
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.updateMatchScore(matchKey, scoreHome, scoreGuest));
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchValidTeamsProvider")
+    public void updateScoreOfRunningMatches_updatedReturned(Match match1, Match match2){
+        scoreboard.startMatch(match1);
+        scoreboard.startMatch(match2);
+        final Integer scoreHome = 3;
+        final Integer scoreGuest = 2;
+        final var matchKey = new MatchKey(match1);
+        var updatedMatch = scoreboard.updateMatchScore(matchKey, scoreHome, scoreGuest);
+        Assertions.assertEquals(match1, updatedMatch);
+    }
+
+    public static Stream<Arguments> matchValidTeamsProvider() {
         var team1 = new Team("France");
         var team2 = new Team("Brazil");
-        Match match = new Match(team1, team2);
-        return Stream.of(Arguments.of(match));
+        var team3 = new Team("Germany");
+        var team4 = new Team("Uruguay");
+        Match match1 = new Match(team1, team2);
+        Match match2= new Match(team3, team4);
+        return Stream.of(Arguments.of(match1, match2));
     }
 
     public static Stream<Arguments> invalidTeamsArgumentEmptyNull() {

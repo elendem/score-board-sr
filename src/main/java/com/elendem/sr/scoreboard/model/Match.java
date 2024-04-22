@@ -24,6 +24,14 @@ public class Match {
         return guest;
     }
 
+    public void setHomeScore(Integer homeScore) {
+        this.homeScore = homeScore;
+    }
+
+    public void setGuestScore(Integer guestScore) {
+        this.guestScore = guestScore;
+    }
+
     public Integer getTotalScore(){
         return homeScore + guestScore;
     }

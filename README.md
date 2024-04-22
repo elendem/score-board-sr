@@ -37,6 +37,9 @@ WorldCupScoreBoard implements FootballScoreBoard
 ```void startMatch(Match match)```
 >- starting a new match adding it to map of ongoing matches with initial score
 
+```Match updateMatchScore(MatchKey matchKey, Integer scoreHome, Integer scoreGuest)```
+>- updating a match score of running match. If score is successfully updated, return updated ```Match``` object
+
 
 ### Model
 ```Match```
@@ -52,8 +55,11 @@ WorldCupScoreBoard implements FootballScoreBoard
 ```Team```
 >- simple java record that keeps team's unique identifier
 
-## Challenges
+## Notes
 - teams input
    - ensure that team identifier is valid (not null or empty)
    - ensure that team is duplicated. In other words that if team is already playing, it cannot play another match
    - ensure that match key is consistent regardless of key sensitivity
+- score update
+  - ensure that score values are valid - not a negative or undefined
+    - letting an option to lowering score kept opened for case of correction

@@ -36,6 +36,18 @@ public class WorldCupScoreBoard implements FootballScoreBoard {
         matchesMap.put(matchKey, match);
     }
 
+    @Override
+    public Match updateMatchScore(MatchKey matchKey, Integer scoreHome, Integer scoreGuest) {
+        validateScores(scoreHome,scoreGuest);
+
+        var matchToUpdate = matchesMap.getOrDefault(matchKey, null);
+        if(matchToUpdate != null){
+            matchToUpdate.setHomeScore(scoreHome);
+            matchToUpdate.setGuestScore(scoreGuest);
+        }
+        return  matchToUpdate;
+    }
+
     private boolean checkIfTeamIsPlaying(MatchKey matchKey){
 
         if(matchesMap.containsKey(matchKey)){
@@ -53,6 +65,16 @@ public class WorldCupScoreBoard implements FootballScoreBoard {
             return true;
         }
         return false;
+    }
+
+    private void validateScores(Integer scoreHome, Integer scoreGuest) {
+        if(scoreHome == null || scoreGuest == null) {
+            throw new IllegalArgumentException("Score(s) not defined");
+        }
+
+        if(scoreHome < 0 || scoreGuest < 0){
+            throw new IllegalArgumentException("Provided score is not valid");
+        }
     }
 
 }
