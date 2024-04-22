@@ -1,5 +1,7 @@
 package com.elendem.sr.scoreboard.model;
 
+import java.time.Instant;
+
 public class Match {
 
 
@@ -7,6 +9,7 @@ public class Match {
     private Team guest;
     private Integer homeScore = 0;
     private Integer guestScore = 0;
+    private Instant matchStartTime;
 
     public Match(Team home, Team guest){
         validateTeam(home);
@@ -14,6 +17,8 @@ public class Match {
 
         validateTeam(guest);
         this.guest = guest;
+
+        matchStartTime = Instant.now();
     }
 
     public Team getHome() {
@@ -36,10 +41,21 @@ public class Match {
         return homeScore + guestScore;
     }
 
+    public Instant getMatchStartTime() {
+        return matchStartTime;
+    }
+
     private void validateTeam(Team team) throws IllegalArgumentException{
         if(team.teamIdentifier() == null || team.teamIdentifier().trim().isEmpty()){
             throw new IllegalArgumentException("Team identifier is not valid");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Match{" + "home=" + home +", guest=" + guest +
+                ", homeScore=" + homeScore +", guestScore=" + guestScore +
+                ", matchStartTime=" + matchStartTime +'}';
     }
 
 }

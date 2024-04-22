@@ -108,7 +108,7 @@ public class WorldCupScoreBoardTest {
     @MethodSource("multipleMatchValidTeams")
     public void finishRunningMatch_checkIfAvailable(List<Match> matches){
         matches.forEach((match -> scoreboard.startMatch(match)));
-        final var matchKey = new MatchKey(matches.get(0));
+        final var matchKey = new MatchKey(matches.getFirst());
         scoreboard.finishMatch(matchKey);
         Assertions.assertEquals(scoreboard.getMatches().size(), matches.size()-1);
     }
@@ -119,6 +119,24 @@ public class WorldCupScoreBoardTest {
         final var matchKey = new MatchKey("RandomKey1", "RandomKey2");
         scoreboard.finishMatch(matchKey);
         Assertions.assertEquals(scoreboard.getMatches().size(), matches.size());
+    }
+
+    @ParameterizedTest
+    @MethodSource("multipleMatchValidTeams")
+    public void getMatchesSummary_validateOrderOfScoreAndStart(List<Match> matches, List<String> results) {
+        for(int i = 0; i< matches.size();i++) {
+            Match match = matches.get(i);
+            scoreboard.startMatch(match);
+            String[] matchResults = results.get(i).split(":");
+            Match updatedMatch = scoreboard.updateMatchScore(new MatchKey(match), Integer.valueOf(matchResults[0]),
+                    Integer.valueOf(matchResults[1]));
+            System.out.println(updatedMatch);
+        }
+        System.out.println("--- get sorted ---");
+        scoreboard.getMatches().forEach(System.out::println);
+        var matchToMatch = matches.stream().filter(match -> match.getHome().teamIdentifier().equals("Uruguay"))
+                .findFirst().orElse(null);
+        Assertions.assertEquals(scoreboard.getMatches().getFirst(), matchToMatch);
     }
 
     public static Stream<Arguments> matchValidTeamsProvider() {
@@ -150,10 +168,11 @@ public class WorldCupScoreBoardTest {
     public static Stream<Arguments> multipleMatchValidTeams() {
         List<String> teams = List.of("Mexico","Canada","Spain","Brazil","Germany","France","Uruguay","Italy",
                 "Argentina","Australia");
+        List<String> results = List.of("0:5","10:2","2:2","6:6","3:1");
         var matchList = new ArrayList<Match>();
 
         Team team1 = null;
-        Team team2 = null;
+        Team team2;
         for (int i = 1; i <= teams.size(); i++){
             if(i % 2 != 0){
                 team1 = new Team(teams.get(i-1));
@@ -162,7 +181,8 @@ public class WorldCupScoreBoardTest {
                 matchList.add(new Match(team1, team2));
             }
         }
-        return Stream.of(Arguments.of(matchList));
+        return Stream.of(Arguments.of(matchList, results));
     }
+
 
 }

@@ -3,6 +3,7 @@ package com.elendem.sr.scoreboard.application;
 import com.elendem.sr.scoreboard.model.Match;
 import com.elendem.sr.scoreboard.model.MatchKey;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,12 +14,13 @@ public class WorldCupScoreBoard implements FootballScoreBoard {
     private Map<MatchKey, Match> matchesMap;
 
     public WorldCupScoreBoard(){
-        matchesMap = new ConcurrentHashMap();
+        matchesMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public List<Match> getMatches() {
-        return matchesMap.values().stream().toList();
+        return matchesMap.values().stream().sorted(Comparator.comparing(Match::getTotalScore)
+                .thenComparing(Match::getMatchStartTime).reversed()).toList();
     }
 
     @Override
@@ -66,10 +68,7 @@ public class WorldCupScoreBoard implements FootballScoreBoard {
         MatchKey containingKey =matchesMap.keySet().stream().filter(homeCond.or(guestCond))
                 .findFirst().orElse(null);
 
-        if(containingKey != null){
-            return true;
-        }
-        return false;
+        return containingKey != null;
     }
 
     private void validateScores(Integer scoreHome, Integer scoreGuest) {

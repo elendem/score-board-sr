@@ -27,12 +27,12 @@ package -f pom.xml
 
 ### Scoreboard class
 ```java
-WorldCupScoreBoard implements FootballScoreBoard
+class WorldCupScoreBoard implements FootballScoreBoard
 ```
 
 ### Interface
 ```List<Match> getMatches()```
->- returns list of matches as a stream of map's values
+>- returns list of sorted matches as a stream of map's values
 
 ```void startMatch(Match match)```
 >- starting a new match adding it to map of ongoing matches with initial score
@@ -59,6 +59,7 @@ WorldCupScoreBoard implements FootballScoreBoard
 >- simple java record that keeps team's unique identifier
 
 ## Notes
+- there is left console output under test getMatchesSummary_validateOrderOfScoreAndStart to print out actual sorted summary
 - teams input
    - ensure that team identifier is valid (not null or empty)
    - ensure that team is duplicated. In other words that if team is already playing, it cannot play another match
