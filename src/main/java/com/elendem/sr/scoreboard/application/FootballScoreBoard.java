@@ -10,4 +10,5 @@ public interface FootballScoreBoard {
     List<Match> getMatches();
     void startMatch(Match match);
     Match updateMatchScore(MatchKey matchKey, Integer scoreHome, Integer scoreGuest);
+    Match finishMatch(MatchKey matchKey);
 }

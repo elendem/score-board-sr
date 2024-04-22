@@ -12,6 +12,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class WorldCupScoreBoardTest {
@@ -102,6 +104,23 @@ public class WorldCupScoreBoardTest {
         Assertions.assertEquals(match1, updatedMatch);
     }
 
+    @ParameterizedTest
+    @MethodSource("multipleMatchValidTeams")
+    public void finishRunningMatch_checkIfAvailable(List<Match> matches){
+        matches.forEach((match -> scoreboard.startMatch(match)));
+        final var matchKey = new MatchKey(matches.get(0));
+        scoreboard.finishMatch(matchKey);
+        Assertions.assertEquals(scoreboard.getMatches().size(), matches.size()-1);
+    }
+    @ParameterizedTest
+    @MethodSource("multipleMatchValidTeams")
+    public void finishRunningMatchWithInvalidKet_checkIfAvailable(List<Match> matches){
+        matches.forEach((match -> scoreboard.startMatch(match)));
+        final var matchKey = new MatchKey("RandomKey1", "RandomKey2");
+        scoreboard.finishMatch(matchKey);
+        Assertions.assertEquals(scoreboard.getMatches().size(), matches.size());
+    }
+
     public static Stream<Arguments> matchValidTeamsProvider() {
         var team1 = new Team("France");
         var team2 = new Team("Brazil");
@@ -126,6 +145,24 @@ public class WorldCupScoreBoardTest {
         Match match1 = new Match(team1, team2);
         Match match2 = new Match(team3, team1);
         return Stream.of(Arguments.of(match1,match2));
+    }
+
+    public static Stream<Arguments> multipleMatchValidTeams() {
+        List<String> teams = List.of("Mexico","Canada","Spain","Brazil","Germany","France","Uruguay","Italy",
+                "Argentina","Australia");
+        var matchList = new ArrayList<Match>();
+
+        Team team1 = null;
+        Team team2 = null;
+        for (int i = 1; i <= teams.size(); i++){
+            if(i % 2 != 0){
+                team1 = new Team(teams.get(i-1));
+            } else {
+                team2 = new Team(teams.get(i-1));
+                matchList.add(new Match(team1, team2));
+            }
+        }
+        return Stream.of(Arguments.of(matchList));
     }
 
 }

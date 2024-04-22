@@ -48,6 +48,11 @@ public class WorldCupScoreBoard implements FootballScoreBoard {
         return  matchToUpdate;
     }
 
+    @Override
+    public Match finishMatch(MatchKey matchKey) {
+        return matchesMap.remove(matchKey);
+    }
+
     private boolean checkIfTeamIsPlaying(MatchKey matchKey){
 
         if(matchesMap.containsKey(matchKey)){

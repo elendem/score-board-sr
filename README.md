@@ -40,6 +40,9 @@ WorldCupScoreBoard implements FootballScoreBoard
 ```Match updateMatchScore(MatchKey matchKey, Integer scoreHome, Integer scoreGuest)```
 >- updating a match score of running match. If score is successfully updated, return updated ```Match``` object
 
+```Match finishMatch(MatchKey matchKey)```
+>- find a match based on key and finish it (remove from map). If match is removed, return remove ```Match``` object
+
 
 ### Model
 ```Match```
